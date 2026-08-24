@@ -20,6 +20,7 @@ export const UI_VIS_MAP = {
   // Per-tool entries pair the sidebar button with its rail launcher.
   'tool-calendar':       '#tool-calendar-btn, #rail-calendar',
   'tool-compare':        '#tool-compare-btn, #rail-compare',
+  'tool-cloud-storage':  '#tool-cloud-storage-btn, #rail-cloud-storage',
   'tool-cookbook':       '#tool-cookbook-btn, #rail-cookbook',
   'tool-research':       '#tool-research-btn, #rail-research',
   'tool-gallery':        '#tool-gallery-btn, #rail-gallery',

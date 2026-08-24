@@ -735,6 +735,9 @@ app.include_router(setup_cleanup_routes(session_manager))
 from routes.personal_routes import setup_personal_routes
 app.include_router(setup_personal_routes(personal_docs_mgr, rag_manager, rag_available))
 
+from routes.file_source_routes import setup_file_source_routes
+app.include_router(setup_file_source_routes(rag_manager))
+
 # Embedding model management
 from routes.embedding_routes import setup_embedding_routes
 app.include_router(setup_embedding_routes())

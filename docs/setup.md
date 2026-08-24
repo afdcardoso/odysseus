@@ -617,7 +617,7 @@ scheme from `X-Forwarded-Proto` for proxies it trusts — by default only
 trusted, so pin the URI there:
 
 ```bash
-GOOGLE_OAUTH_REDIRECT_URI=https://odysseus.example.com/api/email/oauth/google/callback
+GOOGLE_EMAIL_OAUTH_REDIRECT_URI=https://odysseus.example.com/api/email/oauth/google/callback
 ```
 
 (uvicorn's own `FORWARDED_ALLOW_IPS` widens that trust, but it has to be in the

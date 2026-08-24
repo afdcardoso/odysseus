@@ -427,7 +427,7 @@ async def test_callback_valid_owner_writes_encrypted_tokens_to_intended_account(
 # Google rejects the token exchange unless the callback's `redirect_uri` is
 # byte-identical to the one the authorize step sent, so both routes have to
 # agree — including on the scheme. Deriving it from the request keeps HTTPS
-# deployments working without pinning GOOGLE_OAUTH_REDIRECT_URI by hand;
+# deployments working without pinning GOOGLE_EMAIL_OAUTH_REDIRECT_URI by hand;
 # hardcoding `http://` produced an unusable redirect behind any TLS front.
 
 def _authorize_endpoint():
@@ -452,7 +452,7 @@ async def test_callback_redirect_uri_follows_the_request_scheme(scheme, monkeypa
     `https` behind a TLS terminator, `http` on a plain origin."""
     from routes.email_helpers import make_oauth_state
 
-    monkeypatch.delenv("GOOGLE_OAUTH_REDIRECT_URI", raising=False)
+    monkeypatch.delenv("GOOGLE_EMAIL_OAUTH_REDIRECT_URI", raising=False)
 
     db, Factory = _make_db()
     _make_account(db, account_id="acct-s", owner="alice", imap_user="alice@example.com")
@@ -483,12 +483,12 @@ async def test_callback_redirect_uri_follows_the_request_scheme(scheme, monkeypa
 
 @pytest.mark.asyncio
 async def test_callback_redirect_uri_env_override_still_wins(monkeypatch):
-    """An explicit GOOGLE_OAUTH_REDIRECT_URI is used verbatim — deriving the
+    """An explicit GOOGLE_EMAIL_OAUTH_REDIRECT_URI is used verbatim — deriving the
     scheme must not override a value the operator pinned by hand."""
     from routes.email_helpers import make_oauth_state
 
     pinned = "https://mail.example.com/api/email/oauth/google/callback"
-    monkeypatch.setenv("GOOGLE_OAUTH_REDIRECT_URI", pinned)
+    monkeypatch.setenv("GOOGLE_EMAIL_OAUTH_REDIRECT_URI", pinned)
 
     db, Factory = _make_db()
     _make_account(db, account_id="acct-p", owner="alice", imap_user="alice@example.com")
@@ -519,7 +519,7 @@ async def test_authorize_redirect_uri_follows_the_request_scheme(scheme, monkeyp
     `owner=""` is the unconfigured / single-user case, so no DB is touched."""
     import urllib.parse
 
-    monkeypatch.delenv("GOOGLE_OAUTH_REDIRECT_URI", raising=False)
+    monkeypatch.delenv("GOOGLE_EMAIL_OAUTH_REDIRECT_URI", raising=False)
     monkeypatch.setenv("GOOGLE_OAUTH_CLIENT_ID", "client-id.apps.googleusercontent.com")
 
     authorize = _authorize_endpoint()

@@ -28,6 +28,7 @@ import memoryModule from './js/memory.js?v=20260722memoryloading1';
 import voiceRecorderModule from './js/voiceRecorder.js';
 import censorModule from './js/censor.js';
 import galleryModule from './js/gallery.js';
+import cloudStorageModule from './js/cloudStorage.js';
 import { UI_VIS_DEFAULT_OFF, resolveVisibility } from './js/ui_visibility.js';
 import tasksModule from './js/tasks.js?v=20260723tasksbulkfeedback1';
 import calendarModule from './js/calendar.js';
@@ -171,6 +172,7 @@ function initRailHoverLabels() {
     'rail-documents': 'Docs',
     'rail-calendar': 'Calendar',
     'rail-compare': 'Compare',
+    'rail-cloud-storage': 'Cloud Storage',
     'rail-cookbook': 'Cookbook',
     'rail-research': 'Research',
     'rail-email': 'Email',
@@ -1050,6 +1052,18 @@ function initializeEventListeners() {
       if (!Modals.toggle('gallery-modal')) {
         if (galleryModule.isGalleryOpen()) galleryModule.closeGallery();
         else galleryModule.openGallery();
+      }
+    });
+  }
+
+  // Cloud Storage tool button
+  const toolCloudStorageBtn = el('tool-cloud-storage-btn');
+  if (toolCloudStorageBtn) {
+    toolCloudStorageBtn.addEventListener('click', async () => {
+      const Modals = await import('./js/modalManager.js');
+      if (!Modals.toggle('cloud-storage-modal')) {
+        if (cloudStorageModule.isCloudStorageOpen()) cloudStorageModule.closeCloudStorage();
+        else cloudStorageModule.openCloudStorage();
       }
     });
   }
@@ -3738,6 +3752,7 @@ function startOdysseusApp() {
   // Rail tool buttons — delegate to sidebar tool buttons
   const _railToolMap = {
     'rail-compare':   'tool-compare-btn',
+    'rail-cloud-storage': 'tool-cloud-storage-btn',
     'rail-research':  'tool-research-btn',
     'rail-cookbook':   'tool-cookbook-btn',
     'rail-archive':   'tool-library-btn',

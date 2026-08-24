@@ -3361,6 +3361,9 @@ const INTG_TYPES = {
   contacts: { label: 'Contacts', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
   carddav: { label: 'CardDAV', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
   email:   { label: 'Email',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>' },
+  cloud_storage: { label: 'Cloud Storage', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9H17a5 5 0 0 1 .5 9Z"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>' },
+  google_drive: { label: 'Files', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l3 3v15H7z"/><path d="M14 3v4h4"/><path d="M10 13h4M10 17h4"/></svg>' },
+  webdav: { label: 'Files', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h7l2 2h9v11H3z"/><path d="M3 7V5h7l2 2"/></svg>' },
   mcp:     { label: 'MCP',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' },
   codex:   { label: 'Codex',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 10.696.453a6.023 6.023 0 0 0-5.75 4.172 6.061 6.061 0 0 0-3.946 2.945 6.024 6.024 0 0 0 .742 7.099 5.98 5.98 0 0 0 .516 4.911 6.046 6.046 0 0 0 6.51 2.9A5.996 5.996 0 0 0 13.26 23.547a6.023 6.023 0 0 0 5.75-4.172 6.061 6.061 0 0 0 3.946-2.945 6.024 6.024 0 0 0-.674-6.609zM13.26 21.047a4.508 4.508 0 0 1-2.886-1.041l.143-.082 4.793-2.769a.777.777 0 0 0 .391-.676V10.34l2.026 1.17a.072.072 0 0 1 .039.061v5.596a4.532 4.532 0 0 1-4.506 4.48zM3.968 17.64a4.473 4.473 0 0 1-.537-3.018l.143.086 4.793 2.769a.79.79 0 0 0 .782 0l5.852-3.379v2.34a.072.072 0 0 1-.029.062l-4.845 2.796a4.532 4.532 0 0 1-6.159-1.656zM2.804 7.922a4.49 4.49 0 0 1 2.348-1.973V11.6a.778.778 0 0 0 .391.676l5.852 3.378-2.026 1.17a.072.072 0 0 1-.068 0L4.456 14.03a4.532 4.532 0 0 1-1.652-6.108zm16.423 3.823L13.375 8.367l2.026-1.17a.072.072 0 0 1 .068 0l4.845 2.796a4.525 4.525 0 0 1-.7 8.08V12.42a.778.778 0 0 0-.387-.676zm2.015-3.025l-.143-.086-4.793-2.769a.79.79 0 0 0-.782 0L9.672 9.243V6.903a.072.072 0 0 1 .029-.062l4.845-2.796a4.525 4.525 0 0 1 6.696 4.675zM8.598 12.66L6.57 11.49a.072.072 0 0 1-.039-.061V5.833a4.525 4.525 0 0 1 7.413-3.48l-.143.082-4.793 2.769a.777.777 0 0 0-.391.676l-.019 6.78zm1.1-2.379l2.607-1.505 2.607 1.505v3.01l-2.607 1.505-2.607-1.505z"/></svg>' },
   claude:  { label: 'Claude',  icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z"/></svg>' },
@@ -3457,7 +3460,7 @@ async function initUnifiedIntegrations() {
   }
 
   async function fetchAll() {
-    const [apiRes, calRes, cardRes, contactsRes, emailAccountsRes, mcpRes, vaultRes, tokenRes, calendarsRes] = await Promise.all([
+    const [apiRes, calRes, cardRes, contactsRes, emailAccountsRes, mcpRes, vaultRes, tokenRes, calendarsRes, fileSourcesRes] = await Promise.all([
       fetch('/api/auth/integrations', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : { integrations: [] }).catch(() => ({ integrations: [] })),
       fetch('/api/calendar/config/accounts', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : { accounts: [] }).catch(() => ({ accounts: [] })),
       fetch('/api/contacts/config', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : {}).catch(() => ({})),
@@ -3467,6 +3470,7 @@ async function initUnifiedIntegrations() {
       fetch('/api/vault/config', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : {}).catch(() => ({})),
       fetch('/api/tokens', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : []).catch(() => []),
       fetch('/api/calendar/calendars', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : { calendars: [] }).catch(() => ({ calendars: [] })),
+      fetch('/api/file-sources', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : { sources: [] }).catch(() => ({ sources: [] })),
     ]);
     const items = [];
     // API integrations
@@ -3505,6 +3509,20 @@ async function initUnifiedIntegrations() {
       const detail = [acc.from_address || acc.imap_user, acc.imap_host].filter(Boolean).join(' — ');
       items.push({ type: 'email', id: acc.id, name: label, detail, enabled: acc.enabled !== false, data: acc });
     }
+    // File sources are read-only connections that import selected files into
+    // the private document library. They are intentionally separate from API
+    // integrations, but share this unified connection list.
+    for (const source of (fileSourcesRes.sources || [])) {
+      const isGoogle = source.provider === 'google_drive';
+      items.push({
+        type: isGoogle ? 'google_drive' : 'webdav',
+        id: source.id,
+        name: source.display_name || (isGoogle ? 'Google Drive' : 'WebDAV File Share'),
+        detail: isGoogle ? 'Google Drive' : (source.root_url || ''),
+        enabled: true,
+        data: source,
+      });
+    }
     // MCP servers
     const mcpList = Array.isArray(mcpRes) ? mcpRes : (mcpRes.servers || []);
     for (const srv of mcpList) {
@@ -3537,14 +3555,14 @@ async function initUnifiedIntegrations() {
     const statusDot = item.enabled
       ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--color-success,#50fa7b);flex-shrink:0;--notif-glow:var(--color-success,#50fa7b);animation:cookbook-notif-pulse 2s ease-in-out infinite;" title="Active"></span>'
       : '<span style="width:8px;height:8px;border-radius:50%;background:var(--fg);opacity:0.3;flex-shrink:0" title="Disabled"></span>';
-    return `<div class="intg-card" data-intg-id="${item.id}" data-intg-type="${item.type}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:color-mix(in srgb, var(--fg) 3%, transparent);margin-bottom:6px;cursor:pointer;transition:all 0.15s;" title="Click to edit">
+    return `<div class="intg-card" data-intg-id="${esc(item.id)}" data-intg-type="${esc(item.type)}" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:color-mix(in srgb, var(--fg) 3%, transparent);margin-bottom:6px;cursor:pointer;transition:all 0.15s;" title="Click to edit">
       <span style="color:var(--accent, var(--red));flex-shrink:0">${t.icon}</span>
       <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">${item.name} <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;padding:1px 5px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 50%, transparent);border-radius:3px;color:var(--accent, var(--red));background:color-mix(in srgb, var(--accent, var(--red)) 12%, transparent);">${t.label}</span></div>
-        <div style="font-size:11px;opacity:0.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.detail || ''}</div>
+        <div style="font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px">${esc(item.name)} <span style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;padding:1px 5px;border:1px solid color-mix(in srgb, var(--accent, var(--red)) 50%, transparent);border-radius:3px;color:var(--accent, var(--red));background:color-mix(in srgb, var(--accent, var(--red)) 12%, transparent);">${esc(t.label)}</span></div>
+        <div style="font-size:11px;opacity:0.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(item.detail || '')}</div>
       </div>
       ${statusDot}
-      <button class="admin-btn-sm intg-del-btn" data-intg-id="${item.id}" data-intg-type="${item.type}" data-intg-name="${(item.name || '').replace(/"/g, '&quot;')}" title="Remove" style="background:none;border:none;padding:4px;cursor:pointer;color:var(--red);opacity:0.55;display:inline-flex;align-items:center;justify-content:center;">
+      <button class="admin-btn-sm intg-del-btn" data-intg-id="${esc(item.id)}" data-intg-type="${esc(item.type)}" data-intg-name="${esc(item.name)}" title="Remove" style="background:none;border:none;padding:4px;cursor:pointer;color:var(--red);opacity:0.55;display:inline-flex;align-items:center;justify-content:center;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
       </button>
     </div>`;
@@ -3599,6 +3617,7 @@ async function initUnifiedIntegrations() {
           }
           else if (type === 'email') await fetch(`/api/email/accounts/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'mcp') await fetch(`/api/mcp/servers/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+          else if (type === 'google_drive' || type === 'webdav') await fetch(`/api/file-sources/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'codex' || type === 'claude') await fetch(`/api/tokens/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'vault') await fetch('/api/vault/logout', { method: 'POST', credentials: 'same-origin' });
         } catch (_) {}
@@ -3615,10 +3634,135 @@ async function initUnifiedIntegrations() {
     else if (type === 'caldav') showCalDavForm(editId);
     else if (type === 'contacts' || type === 'carddav') showCardDavForm();
     else if (type === 'email') showEmailForm(editId);
+    else if (type === 'cloud_storage') showCloudStorageForm();
+    else if (type === 'google_drive' || type === 'webdav') showFileSourceForm(type, editId);
     else if (type === 'mcp') showMcpForm(editId);
     else if (type === 'codex') showAgentForm('codex', editId);
     else if (type === 'claude') showAgentForm('claude', editId);
     else if (type === 'vault') showVaultForm();
+  }
+
+  function showCloudStorageForm() {
+    formEl.style.display = '';
+    formEl.innerHTML = `
+      <div class="admin-card" style="margin-top:8px">
+        <h2 style="font-size:13px">Add Cloud Storage</h2>
+        <div class="admin-toggle-sub" style="margin-bottom:8px">Connect a read-only source and browse or import files from it.</div>
+        <div class="settings-col">
+          <div class="settings-row"><label class="settings-label" for="uf-cloud-provider">Provider</label><select id="uf-cloud-provider" class="settings-select"><option value="google_drive">Google Drive</option><option value="webdav">WebDAV</option></select></div>
+          <div id="uf-cloud-fields"></div>
+          <div class="settings-row" style="justify-content:flex-end;gap:8px"><span id="uf-cloud-msg" style="font-size:11px;margin-right:auto"></span><button type="button" class="admin-btn-sm" id="uf-cloud-cancel">Cancel</button><button type="button" class="admin-btn-add" id="uf-cloud-connect">Continue</button></div>
+        </div>
+      </div>`;
+    const provider = el('uf-cloud-provider');
+    const fields = el('uf-cloud-fields');
+    const msg = el('uf-cloud-msg');
+    const renderFields = () => {
+      const isGoogle = provider.value === 'google_drive';
+      fields.innerHTML = `<div class="settings-row"><label class="settings-label">Name</label><input id="uf-cloud-name" class="settings-input" placeholder="${isGoogle ? 'My Google Drive' : 'My NAS'}"></div>${isGoogle ? '<div style="font-size:11px;line-height:1.5;opacity:.7">Google OAuth is configured by the Odysseus administrator. You will authorize your own Google account in the next step.</div>' : '<div class="settings-row"><label class="settings-label">WebDAV URL</label><input id="uf-cloud-root-url" class="settings-input" placeholder="https://nas.example/dav/"></div><div class="settings-row"><label class="settings-label">Username</label><input id="uf-cloud-username" class="settings-input" placeholder="Username"></div><div class="settings-row"><label class="settings-label">Password</label><input id="uf-cloud-password" type="password" class="settings-input" placeholder="Password"></div>'}`;
+      msg.textContent = '';
+    };
+    provider.addEventListener('change', renderFields);
+    renderFields();
+    el('uf-cloud-cancel').addEventListener('click', () => { formEl.style.display = 'none'; });
+    el('uf-cloud-connect').addEventListener('click', async () => {
+      const isGoogle = provider.value === 'google_drive';
+      msg.textContent = isGoogle ? 'Opening Google authorization...' : 'Connecting...';
+      msg.style.color = '';
+      const payload = isGoogle
+        ? { display_name: el('uf-cloud-name').value }
+        : { display_name: el('uf-cloud-name').value, root_url: el('uf-cloud-root-url').value, username: el('uf-cloud-username').value, password: el('uf-cloud-password').value };
+      try {
+        const endpoint = isGoogle ? '/api/file-sources/google/start' : '/api/file-sources/webdav';
+        const response = await fetch(endpoint, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || 'Connection failed');
+        if (isGoogle) window.location.assign(data.authorization_url);
+        else { formEl.style.display = 'none'; await renderList(); }
+      } catch (error) {
+        msg.textContent = error.message || 'Connection failed';
+        msg.style.color = 'var(--red)';
+      }
+    });
+  }
+
+  // ── File library source forms ──
+  async function showFileSourceForm(type, editId) {
+    const isGoogle = type === 'google_drive';
+    const isNew = editId === 'new';
+    if (isNew) {
+      formEl.innerHTML = `
+        <div class="admin-card" style="margin-top:8px">
+          <h2 style="font-size:13px">${isGoogle ? 'Connect Google Drive' : 'Connect WebDAV File Share'}</h2>
+          <div class="admin-toggle-sub" style="margin-bottom:8px">Read-only access. Selected files are copied into your private document library.</div>
+          <div class="settings-col">
+            <div class="settings-row"><label class="settings-label">Name</label><input id="uf-fs-name" class="settings-input" placeholder="${isGoogle ? 'My Google Drive' : 'My NAS'}"></div>
+            ${isGoogle
+              ? `<div style="font-size:11px;line-height:1.5;opacity:.7">Google OAuth is configured by the Odysseus administrator. You will authorize your own Google account in the next step.</div>`
+              : `<div class="settings-row"><label class="settings-label">WebDAV URL</label><input id="uf-fs-root-url" class="settings-input" placeholder="https://nas.example/dav/"></div>
+                 <div class="settings-row"><label class="settings-label">Username</label><input id="uf-fs-username" class="settings-input" placeholder="Username"></div>
+                 <div class="settings-row"><label class="settings-label">Password</label><input id="uf-fs-password" type="password" class="settings-input" placeholder="Password"></div>`}
+            <div class="settings-row" style="justify-content:flex-end;gap:8px"><span id="uf-fs-msg" style="font-size:11px;margin-right:auto"></span><button type="button" class="admin-btn-sm" id="uf-fs-cancel">Cancel</button><button type="button" class="admin-btn-add" id="uf-fs-connect">${isGoogle ? 'Authorize Google Drive' : 'Connect File Share'}</button></div>
+          </div>
+        </div>`;
+      el('uf-fs-cancel')?.addEventListener('click', () => { formEl.style.display = 'none'; });
+      el('uf-fs-connect')?.addEventListener('click', async () => {
+        const msg = el('uf-fs-msg');
+        const payload = isGoogle
+          ? { display_name: el('uf-fs-name').value }
+          : { display_name: el('uf-fs-name').value, root_url: el('uf-fs-root-url').value, username: el('uf-fs-username').value, password: el('uf-fs-password').value };
+        msg.textContent = isGoogle ? 'Opening Google authorization…' : 'Connecting…';
+        try {
+          const endpoint = isGoogle ? '/api/file-sources/google/start' : '/api/file-sources/webdav';
+          const response = await fetch(endpoint, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(data.detail || 'Connection failed');
+          if (isGoogle) window.location.assign(data.authorization_url);
+          else { formEl.style.display = 'none'; await renderList(); }
+        } catch (error) {
+          msg.textContent = error.message || 'Connection failed';
+          msg.style.color = 'var(--red)';
+        }
+      });
+      return;
+    }
+
+    formEl.innerHTML = `
+      <div class="admin-card" style="margin-top:8px">
+        <h2 style="font-size:13px">${isGoogle ? 'Google Drive Files' : 'WebDAV Files'}</h2>
+        <div class="admin-toggle-sub" style="margin-bottom:8px">Browse folders and import selected files into your private document library.</div>
+        <div id="uf-fs-browser"></div>
+        <div class="settings-row" style="justify-content:flex-end;margin-top:8px"><span id="uf-fs-msg" style="font-size:11px;margin-right:auto"></span><button type="button" class="admin-btn-sm" id="uf-fs-close">Close</button></div>
+      </div>`;
+    el('uf-fs-close')?.addEventListener('click', () => { formEl.style.display = 'none'; });
+    const browser = el('uf-fs-browser');
+    const message = el('uf-fs-msg');
+    const say = (text, bad = false) => { message.textContent = text; message.style.color = bad ? 'var(--red)' : ''; };
+    async function browse(path = '', pageToken = '') {
+      browser.innerHTML = '<div style="font-size:12px;opacity:.6;padding:8px 0">Loading files…</div>';
+      try {
+        const response = await fetch(`/api/file-sources/${encodeURIComponent(editId)}/browse?${new URLSearchParams({ path, page_token: pageToken })}`, { credentials: 'same-origin' });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.detail || 'Could not browse files');
+        const files = data.files || [];
+        browser.innerHTML = `<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><button type="button" class="admin-btn-sm" id="uf-fs-root">Root</button><button type="button" class="admin-btn-sm" id="uf-fs-import">Import selected</button>${data.next_page_token ? '<button type="button" class="admin-btn-sm" id="uf-fs-next">More</button>' : ''}</div><div>${files.map((file, index) => file.is_folder ? `<button type="button" class="admin-btn-sm" data-fs-folder="${index}" style="margin:0 5px 5px 0">${esc(file.name)}</button>` : `<label style="display:block;font-size:12px;padding:3px 0"><input type="checkbox" data-fs-file="${index}"> ${esc(file.name)}</label>`).join('') || '<span style="font-size:12px;opacity:.55">This folder is empty.</span>'}</div>`;
+        el('uf-fs-root')?.addEventListener('click', () => browse());
+        el('uf-fs-next')?.addEventListener('click', () => browse(path, data.next_page_token));
+        browser.querySelectorAll('[data-fs-folder]').forEach(button => button.addEventListener('click', () => browse(files[Number(button.dataset.fsFolder)].path)));
+        el('uf-fs-import')?.addEventListener('click', async () => {
+          const selected = [...browser.querySelectorAll('[data-fs-file]:checked')].map(input => files[Number(input.dataset.fsFile)]);
+          if (!selected.length) return say('Select one or more files first.', true);
+          say('Importing and indexing…');
+          const result = await fetch(`/api/file-sources/${encodeURIComponent(editId)}/import`, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ files: selected }) });
+          const body = await result.json().catch(() => ({}));
+          say(result.ok ? `Imported ${body.imported_count} file(s).` : (body.detail || 'Import failed'), !result.ok);
+        });
+      } catch (error) {
+        browser.innerHTML = '';
+        say(error.message || 'Could not browse files', true);
+      }
+    }
+    browse();
   }
 
   // ── API form ──
@@ -5515,10 +5659,12 @@ async function initUnifiedIntegrations() {
       ['carddav', 'Contacts (CardDAV)'],
       ['contacts', 'Contacts Import'],
       ['email', 'Email (IMAP/SMTP)'],
+      ['cloud_storage', 'Cloud Storage'],
       ['mcp', 'MCP Tool Server'],
     ];
     const _iconFor = (k) => (INTG_TYPES[k]?.icon || '').replace(/width="14"/, 'width="16"').replace(/height="14"/, 'height="16"');
-    const _rowsHtml = _typeOptions.map(([k, label]) => `<button type="button" class="uf-type-option" data-value="${k}" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;background:transparent;border:0;color:var(--fg);font:inherit;cursor:pointer;text-align:left;"><span style="display:inline-flex;color:var(--accent, var(--red));flex-shrink:0;">${_iconFor(k)}</span><span>${esc(label)}</span></button>`).join('');
+    const _typeRow = ([k, label], nested = false) => `<button type="button" class="uf-type-option" data-value="${k}" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px ${nested ? 24 : 10}px;background:transparent;border:0;color:var(--fg);font:inherit;cursor:pointer;text-align:left;"><span style="display:inline-flex;color:var(--accent, var(--red));flex-shrink:0;">${_iconFor(k)}</span><span>${esc(label)}</span></button>`;
+    const _rowsHtml = _typeOptions.map(option => _typeRow(option)).join('');
 
     // Anchor wrapper so the absolutely-positioned menu lands directly under
     // the add button. The button is the wrapper's only sibling.
