@@ -24,6 +24,7 @@ from src.url_safety import check_outbound_url
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_DRIVE_URL = "https://www.googleapis.com/drive/v3"
+GOOGLE_PHOTOS_PICKER_URL = "https://photospicker.googleapis.com/v1"
 
 
 class FileSourceError(ValueError):
@@ -42,9 +43,9 @@ def _read() -> Dict[str, Any]:
     try:
         with open(FILE_SOURCES_FILE, encoding="utf-8") as f:
             data = json.load(f)
-        return data if isinstance(data, dict) else {"sources": [], "oauth_states": []}
+        return data if isinstance(data, dict) else {"sources": [], "oauth_states": [], "picker_sessions": []}
     except (OSError, json.JSONDecodeError):
-        return {"sources": [], "oauth_states": []}
+        return {"sources": [], "oauth_states": [], "picker_sessions": []}
 
 
 def _write(data: Dict[str, Any]) -> None:
@@ -121,7 +122,7 @@ def delete_source(owner: str, source_id: str) -> bool:
 
 
 def create_source(owner: str, provider: str, display_name: str, **fields: Any) -> Dict[str, Any]:
-    if provider not in ("webdav", "google_drive"):
+    if provider not in ("webdav", "google_drive", "google_photos"):
         raise FileSourceError("Unsupported file-source provider")
     return save_source({"id": uuid.uuid4().hex, "owner": owner, "provider": provider,
                         "display_name": (display_name or provider).strip()[:120],
@@ -150,6 +151,48 @@ def consume_oauth_state(state: str) -> Optional[Dict[str, Any]]:
     data["oauth_states"] = keep
     _write(data)
     return found
+
+
+def save_picker_session(session: Dict[str, Any]) -> Dict[str, Any]:
+    """Persist opaque, owner-bound Picker state without exposing the token."""
+    data = _read()
+    rows = data.setdefault("picker_sessions", [])
+    encoded = _encode(session)
+    for index, row in enumerate(rows):
+        if row.get("id") == session["id"]:
+            rows[index] = encoded
+            break
+    else:
+        rows.append(encoded)
+    _write(data)
+    return session
+
+
+def get_picker_session(owner: str, session_id: str) -> Optional[Dict[str, Any]]:
+    for row in _read().get("picker_sessions", []):
+        if row.get("id") == session_id and row.get("owner") == owner:
+            return _decode(row)
+    return None
+
+
+def delete_picker_session(owner: str, session_id: str) -> bool:
+    data = _read()
+    before = len(data.get("picker_sessions", []))
+    data["picker_sessions"] = [x for x in data.get("picker_sessions", [])
+                                if not (x.get("id") == session_id and x.get("owner") == owner)]
+    if len(data["picker_sessions"]) != before:
+        _write(data)
+        return True
+    return False
+
+
+def delete_picker_sessions_for_source(owner: str, source_id: str) -> None:
+    data = _read()
+    kept = [x for x in data.get("picker_sessions", [])
+            if not (x.get("owner") == owner and x.get("source_id") == source_id)]
+    if len(kept) != len(data.get("picker_sessions", [])):
+        data["picker_sessions"] = kept
+        _write(data)
 
 
 def validate_webdav_url(root_url: str) -> str:
@@ -272,4 +315,9 @@ class GoogleDriveProvider:
 
 
 def provider_for(source: Dict[str, Any]):
-    return WebDAVProvider(source) if source.get("provider") == "webdav" else GoogleDriveProvider(source)
+    if source.get("provider") == "webdav":
+        return WebDAVProvider(source)
+    if source.get("provider") == "google_photos":
+        from src.google_photos import GooglePhotosProvider
+        return GooglePhotosProvider(source)
+    return GoogleDriveProvider(source)

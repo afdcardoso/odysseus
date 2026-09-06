@@ -9,8 +9,12 @@ import re
 import uuid
 from pathlib import Path
 from typing import Dict, Any, Optional
+from urllib.parse import urlencode
 
+import httpx
 from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import RedirectResponse
 
 from core.database import SessionLocal, GalleryImage, GalleryAlbum, ModelEndpoint
 from core.database import Session as DbSession
@@ -22,6 +26,14 @@ from src.upload_limits import (
 )
 from src.constants import GENERATED_IMAGES_DIR
 from src.optional_deps import patch_realesrgan_torchvision_compat
+from src.file_sources import (
+    GOOGLE_AUTH_URL, GOOGLE_TOKEN_URL, FileSourceError, create_oauth_state,
+    create_source, delete_source, get_source, get_picker_session,
+    save_picker_session, google_oauth_credentials, consume_oauth_state,
+    public_source, save_source, provider_for,
+    delete_picker_sessions_for_source,
+)
+from src.google_photos import PICKER_SCOPE
 
 from routes.gallery.gallery_helpers import (
     GalleryPatch, _extract_exif, _image_to_dict, _owner_filter, _human_size,
@@ -347,6 +359,10 @@ async def _fetch_result_image_b64(url: str) -> Optional[str]:
 
 def setup_gallery_routes() -> APIRouter:
     router = APIRouter(tags=["gallery"])
+
+    # ---- Google Photos Picker routes ----
+    # ---- /api/gallery/google-photos/* ----
+    _setup_google_photos_picker_routes(router)
 
     # ---- POST /api/gallery/upload ----
     @router.post("/api/gallery/upload")
@@ -2336,3 +2352,235 @@ def setup_gallery_routes() -> APIRouter:
             db.close()
 
     return router
+
+
+def _setup_google_photos_picker_routes(router: APIRouter):
+    """
+    Set up Google Photos picker routes.
+    These are used by the editor's "Import from Google Photos" feature. 
+    The routes handle OAuth2 flow and fetching albums/photos from the user's Google Photos account.
+    """
+    import asyncio
+    import routes.gallery.google_import as g_import
+    photos_import_lock = asyncio.Lock()
+
+    def gallery_owner(request: Request) -> str:
+        return require_privilege(request, "can_use_gallery")
+
+    def photos_callback_url(request: Request) -> str:
+        return os.environ.get("GOOGLE_PHOTOS_OAUTH_REDIRECT_URI", "").strip() or str(
+            request.url_for("google_photos_callback")
+        )
+
+    def photos_source(owner: str) -> Dict[str, Any]:
+        from src.file_sources import _read
+        for row in _read().get("sources", []):
+            if row.get("owner") == owner and row.get("provider") == "google_photos":
+                source = get_source(owner, row.get("id", ""))
+                if source:
+                    return source
+        raise HTTPException(400, "Connect Google Photos in Settings first")
+
+
+    def _get_or_404_album(db, album_id: str, user):
+        album = db.query(GalleryAlbum).filter(GalleryAlbum.id == album_id).first()
+        if not album:
+            raise HTTPException(404, "Album not found")
+        if not user or album.owner != user:
+            raise HTTPException(404, "Album not found")
+        return album
+
+    def _get_or_404_image(db, image_id: str, user):
+        img = db.query(GalleryImage).filter(GalleryImage.id == image_id).first()
+        if not img:
+            raise HTTPException(404, "Image not found")
+        if not user or img.owner != user:
+            raise HTTPException(404, "Image not found")
+        return img
+
+
+    @router.post("/api/gallery/google-photos/start")
+    async def google_photos_start(request: Request, payload: Optional[Dict[str, Any]] = None):
+        owner = gallery_owner(request)
+        client_id, client_secret = google_oauth_credentials()
+        if not client_id or not client_secret:
+            raise HTTPException(400, "Google OAuth client ID and secret are required")
+        source = None
+        try:
+            source = photos_source(owner)
+        except HTTPException:
+            source = create_source(owner, "google_photos", "Google Photos", oauth={})
+        state = create_oauth_state(owner, source["id"])
+        query = urlencode({"client_id": client_id, "redirect_uri": photos_callback_url(request),
+                           "response_type": "code", "scope": PICKER_SCOPE,
+                           "access_type": "offline", "prompt": "consent", "state": state})
+        return {"authorization_url": f"{GOOGLE_AUTH_URL}?{query}", "source": public_source(source)}
+
+    @router.get("/api/gallery/google-photos/callback", name="google_photos_callback")
+    async def google_photos_callback(request: Request, state: str = "", code: str = "", error: str = ""):
+        row = consume_oauth_state(state)
+        if not row:
+            raise HTTPException(400, "Google Photos authorization state is invalid or expired")
+        if error or not code:
+            return RedirectResponse("/?google_photos_error=" + (error or "authorization_denied"), status_code=303)
+        source = get_source(row["owner"], row["source_id"])
+        client_id, client_secret = google_oauth_credentials()
+        if not source or not client_id or not client_secret:
+            raise HTTPException(400, "Google Photos OAuth configuration is incomplete")
+        try:
+            async with httpx.AsyncClient(timeout=30) as client:
+                response = await client.post(GOOGLE_TOKEN_URL, data={
+                    "code": code, "client_id": client_id, "client_secret": client_secret,
+                    "redirect_uri": photos_callback_url(request), "grant_type": "authorization_code",
+                })
+            response.raise_for_status()
+            tokens = response.json()
+        except httpx.HTTPError as exc:
+            raise HTTPException(400, f"Google Photos token exchange failed: {exc}")
+        source["oauth"] = {"access_token": tokens.get("access_token", ""),
+                            "refresh_token": tokens.get("refresh_token", ""),
+                            "expires_at": __import__("time").time() + int(tokens.get("expires_in", 0))}
+        save_source(source)
+        return RedirectResponse("/?google_photos_connected=1", status_code=303)
+
+    @router.post("/api/gallery/google-photos/session")
+    async def google_photos_session(request: Request):
+        owner = gallery_owner(request)
+        source = photos_source(owner)
+        try:
+            data = await run_in_threadpool(provider_for(source).create_session)
+        except (FileSourceError, httpx.HTTPError) as exc:
+            raise HTTPException(502, str(exc))
+        local_id = uuid.uuid4().hex
+        save_picker_session({"id": local_id, "owner": owner, "source_id": source["id"],
+                             "google_session_id": data["id"], "media_items": [],
+                             "expires_at": data.get("expireTime"), "poll_interval": data.get("pollingConfig", {}).get("pollInterval", "5s")})
+        return {"session_id": local_id, "picker_uri": data["pickerUri"],
+                "poll_interval": data.get("pollingConfig", {}).get("pollInterval", "5s")}
+
+    @router.get("/api/gallery/google-photos/session/{session_id}")
+    async def google_photos_session_status(request: Request, session_id: str):
+        owner = gallery_owner(request)
+        session = get_picker_session(owner, session_id)
+        if not session:
+            raise HTTPException(404, "Picker session not found")
+        source = get_source(owner, session["source_id"])
+        if not source:
+            raise HTTPException(404, "Google Photos connection not found")
+        provider = provider_for(source)
+        try:
+            remote = await run_in_threadpool(provider.get_session, session["google_session_id"])
+            items = session.get("media_items", [])
+            if remote.get("mediaItemsSet") and not items:
+                items = list(await run_in_threadpool(provider.list_media_items, session["google_session_id"]))
+                session["media_items"] = items
+                save_picker_session(session)
+            return {"media_items_set": bool(remote.get("mediaItemsSet")), "media_items": [
+                {"id": x.get("id"), "filename": x.get("mediaFile", {}).get("filename", "media"),
+                 "mime_type": x.get("mediaFile", {}).get("mimeType", "")} for x in items]}
+        except (FileSourceError, httpx.HTTPError) as exc:
+            raise HTTPException(502, str(exc))
+
+    @router.post("/api/gallery/google-photos/import")
+    async def google_photos_import(request: Request, payload: Dict[str, Any]):
+        owner = gallery_owner(request)
+        session_id = str(payload.get("session_id", ""))
+        selected = payload.get("media_ids")
+        if not session_id or not isinstance(selected, list) or not selected:
+            raise HTTPException(400, "Select at least one Google Photos item")
+        selected = list(selected)
+        
+        album_id :str = payload.get("album_id") or ""
+        if album_id and owner:
+            check_db = SessionLocal()
+            try:
+                _get_or_404_album(check_db, album_id, owner)
+            finally:
+                check_db.close()
+
+        session = get_picker_session(owner, session_id)
+        if not session:
+            raise HTTPException(404, "Picker session not found")
+        allowed = {str(item.get("id")): item for item in session.get("media_items", [])}
+        if any(str(item_id) not in allowed for item_id in selected):
+            raise HTTPException(400, "Media selection is not valid for this Picker session")
+
+        source = get_source(owner, session["source_id"])
+        if not source:
+            raise HTTPException(404, "Google Photos connection not found")
+
+        results = g_import.GooglePhotosImport()
+        async with photos_import_lock:
+            results = _import()
+        return results.HTTP_results()
+    
+    async def _import(source: dict, selected: list, allowed: dict, album_id: str, owner: str) -> g_import.GooglePhotosImport:
+        results = g_import.GooglePhotosImport()
+        provider = provider_for(source)
+        db = SessionLocal()
+        try:
+            for media_id in dict.fromkeys(str(x) for x in selected):
+                item = allowed[media_id]
+                media_file = item.get("mediaFile") or {}
+                original = str(media_file.get("filename") or "media")
+                ext = Path(original).suffix.lower().lstrip(".")
+                if ext not in {"png", "jpg", "jpeg", "webp", "gif", "mp4", "mov", "webm", "mkv", "m4v"}:
+                    results.add_import_failure(media_id, "Unsupported media type"); continue
+
+                # check for duplicates 
+                duplicate = db.query(GalleryImage).filter(
+                    GalleryImage.owner == owner,
+                    GalleryImage.remote_media_id == media_id, 
+                    GalleryImage.source_provider == "google_photos",
+                ).first()
+                if duplicate:
+                    results.add_import_duplicate(media_id, id=duplicate.id); continue
+
+                filename = f"{uuid.uuid4().hex[:12]}.{ext}"
+                path = Path(GENERATED_IMAGES_DIR) / (filename + ".part")
+                stored = False
+                try:
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    await run_in_threadpool(provider.download, media_file.get("baseUrl", ""), str(path),
+                                                is_video=media_file.get("mimeType", "").startswith("video/"))
+                    content = path.read_bytes()
+                    if len(content) > GALLERY_UPLOAD_MAX_BYTES:
+                        raise FileSourceError("Google Photos media exceeds the Gallery size limit")
+                    file_hash = hashlib.sha256(content).hexdigest()
+
+                    # duplicate file hash
+                    existing = db.query(GalleryImage).filter(GalleryImage.owner == owner, GalleryImage.file_hash == file_hash,
+                                                                GalleryImage.is_active == True).first()
+                    if existing:
+                        results.add_import_duplicate(media_id, id=existing.id); continue
+
+                    path.rename(path.with_name(filename))
+                    stored = True
+                    exif = {} if media_file.get("mimeType", "").startswith("video/") else _extract_exif(content)
+                    image_id = str(uuid.uuid4())
+                    db.add(GalleryImage(id=image_id, filename=filename, prompt=original, model="google_photos",
+                        owner=owner, file_hash=file_hash, file_size=len(content), source_provider="google_photos",
+                        source_id=source["id"], remote_media_id=media_id, original_filename=original,
+                        width=exif.get("width"), height=exif.get("height"), taken_at=exif.get("taken_at"),
+                        camera_make=exif.get("camera_make"), camera_model=exif.get("camera_model"),
+                        gps_lat=exif.get("gps_lat"), gps_lng=exif.get("gps_lng"), album_id=album_id))
+                    db.commit()
+                    results.add_import_success(media_id, id=image_id, filename=filename)
+                except Exception as exc:
+                    db.rollback()
+                    results.add_import_failure(media_id, str(exc))
+                finally:
+                    for candidate in (path, path.with_name(filename)) if not stored else (path,):
+                        try: candidate.unlink()
+                        except OSError: pass
+        finally:
+            db.close()
+
+    @router.delete("/api/gallery/google-photos")
+    def google_photos_disconnect(request: Request):
+        owner = gallery_owner(request)
+        source = photos_source(owner)
+        delete_source(owner, source["id"])
+        delete_picker_sessions_for_source(owner, source["id"])
+        return {"ok": True, "message": "Disconnected. Imported local files were kept."}
+

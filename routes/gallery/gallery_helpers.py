@@ -117,6 +117,10 @@ def _image_to_dict(img: GalleryImage, session_name: str = None) -> Dict[str, Any
         "width": img.width,
         "height": img.height,
         "file_size": img.file_size,
+        "source_provider": img.source_provider,
+        "source_id": img.source_id,
+        "remote_media_id": img.remote_media_id,
+        "original_filename": img.original_filename,
         "created_at": img.created_at.isoformat() if img.created_at else None,
         "updated_at": img.updated_at.isoformat() if img.updated_at else None,
     }

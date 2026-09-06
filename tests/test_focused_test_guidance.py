@@ -106,6 +106,7 @@ def test_changed_paths_from_merge_base_excludes_base_only_test_changes(tmp_path,
     _git(repo, "init")
     _git(repo, "config", "user.email", "ci@example.test")
     _git(repo, "config", "user.name", "CI Test")
+    _git(repo, "config", "commit.gpgsign", "false")
 
     _write(repo / "tests/test_shared.py", "def test_shared():\n    assert True\n")
     _git(repo, "add", "tests/test_shared.py")

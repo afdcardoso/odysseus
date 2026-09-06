@@ -361,7 +361,11 @@ class GalleryImage(TimestampMixin, Base):
     favorite   = Column(Boolean, default=False)
 
     # File integrity
-    file_hash  = Column(String(64), nullable=True, index=True)  # SHA-256
+    file_hash         = Column(String(64), nullable=True, index=True)  # SHA-256
+    source_provider   = Column(String, nullable=True, index=True)
+    source_id         = Column(String, nullable=True, index=True)
+    remote_media_id   = Column(String, nullable=True, index=True)
+    original_filename = Column(String, nullable=True)
 
     # EXIF / photo metadata
     taken_at       = Column(DateTime, nullable=True, index=True)  # EXIF DateTimeOriginal
@@ -1365,6 +1369,34 @@ def _migrate_add_gallery_caption_column():
             pass
 
 
+def _migrate_add_gallery_provenance_columns():
+    """Add source metadata used by read-only Gallery imports."""
+    if not DATABASE_URL.startswith("sqlite"):
+        return
+    db_path = DATABASE_URL.replace("sqlite:///", "")
+    if not os.path.exists(db_path):
+        return
+    conn = None
+    try:
+        conn = sqlite3.connect(db_path)
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(gallery_images)")}
+        additions = {
+            "source_provider": "TEXT",
+            "source_id": "TEXT",
+            "remote_media_id": "TEXT",
+            "original_filename": "TEXT",
+        }
+        for name, kind in additions.items():
+            if name not in columns:
+                conn.execute(f"ALTER TABLE gallery_images ADD COLUMN {name} {kind}")
+        conn.commit()
+    except Exception as e:
+        logging.getLogger(__name__).warning(f"Migration gallery provenance failed: {e}")
+    finally:
+        if conn is not None:
+            conn.close()
+
+
 def _migrate_add_api_token_scopes_column():
     """Add API token scopes for existing installs.
 
@@ -2118,6 +2150,7 @@ def init_db():
     _migrate_add_mode_column()
     _migrate_add_multiuser_owner_columns()
     _migrate_add_gallery_caption_column()
+    _migrate_add_gallery_provenance_columns()
     _migrate_add_api_token_scopes_column()
     _migrate_backfill_document_owner_from_session()
     _migrate_assign_legacy_owner()

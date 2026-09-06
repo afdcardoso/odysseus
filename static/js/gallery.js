@@ -1213,6 +1213,53 @@ function _wireUploadTile() {
   });
 }
 
+async function _pickFromGooglePhotos() {
+  let session;
+  try {
+    let response = await fetch(`${API_BASE}/api/gallery/google-photos/session`, {
+      method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+    });
+    if (!response.ok) {
+      const start = await fetch(`${API_BASE}/api/gallery/google-photos/start`, {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      });
+      const data = await start.json();
+      if (!start.ok || !data.authorization_url) throw new Error(data.detail || 'Google Photos is not connected');
+      window.open(data.authorization_url, '_blank', 'noopener');
+      uiModule.showToast('Authorize Google Photos, then choose Pick from Google Photos again');
+      return;
+    }
+    session = await response.json();
+    window.open(session.picker_uri, '_blank', 'noopener');
+    uiModule.showToast('Choose photos in Google Photos. This gallery will import them when you finish.');
+    const interval = Math.max(2000, parseFloat(session.poll_interval || '5') * 1000 || 5000);
+    for (let attempt = 0; attempt < 120; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, interval));
+      response = await fetch(`${API_BASE}/api/gallery/google-photos/session/${encodeURIComponent(session.session_id)}`, { credentials: 'same-origin' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Google Photos Picker failed');
+      if (!data.media_items_set) continue;
+      const ids = (data.media_items || []).map(item => item.id).filter(Boolean);
+      if (!ids.length) throw new Error('No photos were selected');
+      const imported = await fetch(`${API_BASE}/api/gallery/google-photos/import`, {
+        method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: session.session_id, media_ids: ids, album_id: _activeAlbum }),
+      });
+      const result = await imported.json();
+      if (!imported.ok) throw new Error(result.detail || 'Google Photos import failed');
+      uiModule.showToast(`${result.imported_count || 0} Google Photos item${result.imported_count === 1 ? '' : 's'} imported`);
+      _fetchLibrary(false);
+      _fetchAlbums();
+      return;
+    }
+    throw new Error('Google Photos Picker timed out');
+  } catch (error) {
+    console.error('Google Photos import error:', error);
+    uiModule.showError(error.message || 'Google Photos import failed');
+  }
+}
+
 // Shimmer placeholder tiles shown while the FIRST page loads, so the grid
 // doesn't pop from empty → full (re-opens keep the old photos via
 // stale-while-revalidate, so skeletons only show when there's nothing yet).
@@ -2071,6 +2118,7 @@ export function openGallery() {
             <option value="oldest"${_sort === 'oldest' ? ' selected' : ''}>↑ Oldest first</option>
           </select>
           <button class="gallery-select-btn gallery-toolbar-action" id="gallery-select-btn" title="Select for bulk actions"><span style="position:relative;top:1px;">Select</span></button>
+          <button class="gallery-select-btn gallery-toolbar-action" id="gallery-google-photos-btn" title="Pick from Google Photos" aria-label="Pick from Google Photos"><span style="position:relative;top:1px;">Google Photos</span></button>
         </div>
         <div class="gallery-album-chips" id="gallery-filter-chips" style="margin-top:0;"></div>
         <div class="memory-bulk-bar hidden" id="gallery-bulk-bar" style="margin-bottom:4px;">
@@ -2269,6 +2317,8 @@ export function openGallery() {
     if (_sort === 'shuffle') _shuffleSeed = Math.floor(Math.random() * 2 ** 31);
     _fetchLibrary(false);
   });
+
+  document.getElementById('gallery-google-photos-btn')?.addEventListener('click', _pickFromGooglePhotos);
 
   document.getElementById('gallery-model-filter').addEventListener('change', (e) => {
     _activeModel = e.target.value || null;

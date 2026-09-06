@@ -3363,6 +3363,7 @@ const INTG_TYPES = {
   email:   { label: 'Email',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>' },
   cloud_storage: { label: 'Cloud Storage', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9H17a5 5 0 0 1 .5 9Z"/><path d="M12 12v6"/><path d="m9 15 3 3 3-3"/></svg>' },
   google_drive: { label: 'Files', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l3 3v15H7z"/><path d="M14 3v4h4"/><path d="M10 13h4M10 17h4"/></svg>' },
+  google_photos: { label: 'Gallery', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>' },
   webdav: { label: 'Files', icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h7l2 2h9v11H3z"/><path d="M3 7V5h7l2 2"/></svg>' },
   mcp:     { label: 'MCP',     icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>' },
   codex:   { label: 'Codex',   icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 10.696.453a6.023 6.023 0 0 0-5.75 4.172 6.061 6.061 0 0 0-3.946 2.945 6.024 6.024 0 0 0 .742 7.099 5.98 5.98 0 0 0 .516 4.911 6.046 6.046 0 0 0 6.51 2.9A5.996 5.996 0 0 0 13.26 23.547a6.023 6.023 0 0 0 5.75-4.172 6.061 6.061 0 0 0 3.946-2.945 6.024 6.024 0 0 0-.674-6.609zM13.26 21.047a4.508 4.508 0 0 1-2.886-1.041l.143-.082 4.793-2.769a.777.777 0 0 0 .391-.676V10.34l2.026 1.17a.072.072 0 0 1 .039.061v5.596a4.532 4.532 0 0 1-4.506 4.48zM3.968 17.64a4.473 4.473 0 0 1-.537-3.018l.143.086 4.793 2.769a.79.79 0 0 0 .782 0l5.852-3.379v2.34a.072.072 0 0 1-.029.062l-4.845 2.796a4.532 4.532 0 0 1-6.159-1.656zM2.804 7.922a4.49 4.49 0 0 1 2.348-1.973V11.6a.778.778 0 0 0 .391.676l5.852 3.378-2.026 1.17a.072.072 0 0 1-.068 0L4.456 14.03a4.532 4.532 0 0 1-1.652-6.108zm16.423 3.823L13.375 8.367l2.026-1.17a.072.072 0 0 1 .068 0l4.845 2.796a4.525 4.525 0 0 1-.7 8.08V12.42a.778.778 0 0 0-.387-.676zm2.015-3.025l-.143-.086-4.793-2.769a.79.79 0 0 0-.782 0L9.672 9.243V6.903a.072.072 0 0 1 .029-.062l4.845-2.796a4.525 4.525 0 0 1 6.696 4.675zM8.598 12.66L6.57 11.49a.072.072 0 0 1-.039-.061V5.833a4.525 4.525 0 0 1 7.413-3.48l-.143.082-4.793 2.769a.777.777 0 0 0-.391.676l-.019 6.78zm1.1-2.379l2.607-1.505 2.607 1.505v3.01l-2.607 1.505-2.607-1.505z"/></svg>' },
@@ -3515,10 +3516,10 @@ async function initUnifiedIntegrations() {
     for (const source of (fileSourcesRes.sources || [])) {
       const isGoogle = source.provider === 'google_drive';
       items.push({
-        type: isGoogle ? 'google_drive' : 'webdav',
+        type: source.provider === 'google_photos' ? 'google_photos' : (isGoogle ? 'google_drive' : 'webdav'),
         id: source.id,
-        name: source.display_name || (isGoogle ? 'Google Drive' : 'WebDAV File Share'),
-        detail: isGoogle ? 'Google Drive' : (source.root_url || ''),
+        name: source.display_name || (source.provider === 'google_photos' ? 'Google Photos' : (isGoogle ? 'Google Drive' : 'WebDAV File Share')),
+        detail: source.provider === 'google_photos' ? 'Gallery Picker' : (isGoogle ? 'Google Drive' : (source.root_url || '')),
         enabled: true,
         data: source,
       });
@@ -3618,6 +3619,7 @@ async function initUnifiedIntegrations() {
           else if (type === 'email') await fetch(`/api/email/accounts/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'mcp') await fetch(`/api/mcp/servers/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'google_drive' || type === 'webdav') await fetch(`/api/file-sources/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+          else if (type === 'google_photos') await fetch('/api/gallery/google-photos', { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'codex' || type === 'claude') await fetch(`/api/tokens/${id}`, { method: 'DELETE', credentials: 'same-origin' });
           else if (type === 'vault') await fetch('/api/vault/logout', { method: 'POST', credentials: 'same-origin' });
         } catch (_) {}
@@ -3649,7 +3651,7 @@ async function initUnifiedIntegrations() {
         <h2 style="font-size:13px">Add Cloud Storage</h2>
         <div class="admin-toggle-sub" style="margin-bottom:8px">Connect a read-only source and browse or import files from it.</div>
         <div class="settings-col">
-          <div class="settings-row"><label class="settings-label" for="uf-cloud-provider">Provider</label><select id="uf-cloud-provider" class="settings-select"><option value="google_drive">Google Drive</option><option value="webdav">WebDAV</option></select></div>
+          <div class="settings-row"><label class="settings-label" for="uf-cloud-provider">Provider</label><select id="uf-cloud-provider" class="settings-select"><option value="google_photos">Google Photos</option><option value="google_drive">Google Drive</option><option value="webdav">WebDAV</option></select></div>
           <div id="uf-cloud-fields"></div>
           <div class="settings-row" style="justify-content:flex-end;gap:8px"><span id="uf-cloud-msg" style="font-size:11px;margin-right:auto"></span><button type="button" class="admin-btn-sm" id="uf-cloud-cancel">Cancel</button><button type="button" class="admin-btn-add" id="uf-cloud-connect">Continue</button></div>
         </div>
@@ -3658,22 +3660,24 @@ async function initUnifiedIntegrations() {
     const fields = el('uf-cloud-fields');
     const msg = el('uf-cloud-msg');
     const renderFields = () => {
-      const isGoogle = provider.value === 'google_drive';
-      fields.innerHTML = `<div class="settings-row"><label class="settings-label">Name</label><input id="uf-cloud-name" class="settings-input" placeholder="${isGoogle ? 'My Google Drive' : 'My NAS'}"></div>${isGoogle ? '<div style="font-size:11px;line-height:1.5;opacity:.7">Google OAuth is configured by the Odysseus administrator. You will authorize your own Google account in the next step.</div>' : '<div class="settings-row"><label class="settings-label">WebDAV URL</label><input id="uf-cloud-root-url" class="settings-input" placeholder="https://nas.example/dav/"></div><div class="settings-row"><label class="settings-label">Username</label><input id="uf-cloud-username" class="settings-input" placeholder="Username"></div><div class="settings-row"><label class="settings-label">Password</label><input id="uf-cloud-password" type="password" class="settings-input" placeholder="Password"></div>'}`;
+      const isGoogle = provider.value === 'google_drive' || provider.value === 'google_photos';
+      const isPhotos = provider.value === 'google_photos';
+      fields.innerHTML = `<div class="settings-row"><label class="settings-label">Name</label><input id="uf-cloud-name" class="settings-input" placeholder="${isPhotos ? 'My Google Photos' : isGoogle ? 'My Google Drive' : 'My NAS'}"></div>${isGoogle ? '<div style="font-size:11px;line-height:1.5;opacity:.7">Google OAuth is configured by the Odysseus administrator. You will authorize your own Google account in the next step.</div>' : '<div class="settings-row"><label class="settings-label">WebDAV URL</label><input id="uf-cloud-root-url" class="settings-input" placeholder="https://nas.example/dav/"></div><div class="settings-row"><label class="settings-label">Username</label><input id="uf-cloud-username" class="settings-input" placeholder="Username"></div><div class="settings-row"><label class="settings-label">Password</label><input id="uf-cloud-password" type="password" class="settings-input" placeholder="Password"></div>'}`;
       msg.textContent = '';
     };
     provider.addEventListener('change', renderFields);
     renderFields();
     el('uf-cloud-cancel').addEventListener('click', () => { formEl.style.display = 'none'; });
     el('uf-cloud-connect').addEventListener('click', async () => {
-      const isGoogle = provider.value === 'google_drive';
+      const isGoogle = provider.value === 'google_drive' || provider.value === 'google_photos';
+      const isPhotos = provider.value === 'google_photos';
       msg.textContent = isGoogle ? 'Opening Google authorization...' : 'Connecting...';
       msg.style.color = '';
       const payload = isGoogle
         ? { display_name: el('uf-cloud-name').value }
         : { display_name: el('uf-cloud-name').value, root_url: el('uf-cloud-root-url').value, username: el('uf-cloud-username').value, password: el('uf-cloud-password').value };
       try {
-        const endpoint = isGoogle ? '/api/file-sources/google/start' : '/api/file-sources/webdav';
+        const endpoint = isPhotos ? '/api/gallery/google-photos/start' : isGoogle ? '/api/file-sources/google/start' : '/api/file-sources/webdav';
         const response = await fetch(endpoint, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.detail || 'Connection failed');

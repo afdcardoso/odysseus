@@ -79,6 +79,7 @@ services:
       - GOOGLE_OAUTH_CLIENT_SECRET=${GOOGLE_OAUTH_CLIENT_SECRET:-}
       - GOOGLE_EMAIL_OAUTH_REDIRECT_URI=${GOOGLE_EMAIL_OAUTH_REDIRECT_URI:-}
       - GOOGLE_DRIVE_OAUTH_REDIRECT_URI=${GOOGLE_DRIVE_OAUTH_REDIRECT_URI:-}
+      - GOOGLE_PHOTOS_OAUTH_REDIRECT_URI=${GOOGLE_PHOTOS_OAUTH_REDIRECT_URI:-}
       # Externally reachable origin for MCP OAuth callbacks. The container
       # always listens on 7000 and cannot see the host port map above, so
       # remote MCP OAuth needs this set whenever the browser reaches
